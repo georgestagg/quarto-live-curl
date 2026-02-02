@@ -47,4 +47,5 @@ response <- request("https://hb.cran.dev/get") |>
 
 # Extract the response
 data <- response |> resp_body_json()
+data
 ```
