@@ -1,0 +1,50 @@
+---
+title: "Quarto Live Curl Demo"
+subtitle: "A demo of using the {curl} R package with Quarto Live"
+engine: knitr
+webr:
+  packages:
+    - curl
+    - httr2
+    - jsonlite
+resources:
+ - coi-serviceworker.min.js
+format:
+  live-html:
+    include-in-header:
+      - text: |
+          <script src="./coi-serviceworker.min.js"></script>
+---
+
+{{< include _extensions/r-wasm/live/_knitr.qmd >}}
+
+This repository makes use of the [coi-serviceworker](https://github.com/gzuidhof/coi-serviceworker) to enable Cross-Origin Isolation on a Quarto Website published to GitHub Pages. This enables the use of the {curl} R package with Quarto Live, when combined with a Websocket proxy as described in the [webR documentation](https://docs.r-wasm.org/webr/latest/networking.html#advanced-networking-with-a-websocket-proxy).
+
+View this document's source at <https://github.com/georgestagg/quarto-live-curl/>.
+
+### Demo
+
+```{webr}
+#| autorun: true
+#| echo: false
+# Set the Websocket proxy server
+Sys.setenv(ALL_PROXY='socks5h://test:yolo@ws.r-universe.dev:443')
+```
+
+```{webr}
+#| autorun: false
+#| completion: true
+response <- curl_fetch_memory("https://hb.cran.dev/get")
+response
+```
+
+```{webr}
+#| autorun: false
+#| completion: true
+# Create a request with proxy
+response <- request("https://hb.cran.dev/get") |>
+  req_perform()
+
+# Extract the response
+data <- response |> resp_body_json()
+```
